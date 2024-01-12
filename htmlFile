@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JDBC</title>
+</head>
+<body>
+<h1>Database Menu</h1>
+<form action="test" method="get">
+	Id: <input type="text" name="sid"><br><br>
+	Name: <input type="text" name="sname"><br><br>
+	Email: <input type="text" name="semail"><br><br>
+	
+	Operations:
+	<input type="radio" name="op" value="1">Create
+	<input type="radio" name="op" value="2">Read
+	<input type="radio" name="op" value="3">Update
+	<input type="radio" name="op" value="4">Delete
+	<br><br>
+	<input type="submit">
+</form>
+</body>
+</html>
