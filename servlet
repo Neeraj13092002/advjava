@@ -1,0 +1,113 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/Serv")
+public class Serv extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    public Serv() {
+        super();
+    }
+    // Code
+    static Connection conn = null;
+    static PrintWriter pw = null;
+	static void create(int id, String name, String email) throws Exception{
+		// Query
+		String query = "INSERT into student values (?,?,?)";
+		// Statement
+		PreparedStatement pstm = conn.prepareStatement(query);
+		pstm.setInt(1,id);
+		pstm.setString(2,name);
+		pstm.setString(3, email);
+		// Execution
+		pstm.execute();
+	}
+	static void read() throws Exception{
+		// Query
+		String query = "SELECT * from student";
+		// Statement
+		PreparedStatement pstm = conn.prepareStatement(query);
+		// Execute
+		ResultSet rs = pstm.executeQuery(query);
+		pw.println("<h2>Student DataBase</h2>");
+		while(rs.next()) {
+			int id = rs.getInt(1);
+			String name = rs.getString(2);
+			String email = rs.getString(3);
+			pw.println("Id: "+id+"\tName: "+name+"\tEmail: "+email+"<br>");
+		}
+	}
+	static void update(int id, String name, String email) throws Exception{
+		// Query
+		String query = "UPDATE student set Name = ?, Email = ? where id = ?";
+		// Statement
+		PreparedStatement pstm = conn.prepareStatement(query);
+		pstm.setString(1,name);
+		pstm.setString(2,email);
+		pstm.setInt(3,id);
+		// Execute
+		pstm.execute();
+	}
+	static void delete(int id) throws Exception{
+		// Query
+		String query = "DELETE from student where id = ?";
+		// Statement
+		PreparedStatement pstm = conn.prepareStatement(query);
+		pstm.setInt(1,id);
+		// Execute
+		pstm.execute();
+	}
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	
+		res.setContentType("text/html");
+		int id = Integer.parseInt((req.getParameter("sid")!="")?req.getParameter("sid"):"0");
+		String name = req.getParameter("sname");
+		String email = req.getParameter("semail");
+		int op = Integer.parseInt(req.getParameter("op"));
+		pw=res.getWriter();
+		
+		try {
+//			String driver = "com.mysql.cj.jdbc.Driver"; 
+//			String url = "jdbc:mysql://localhost:3307/db";
+//			String username = "root";
+//			String userpass = "";
+			Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3307/db", "root", "");
+			// Switch
+			switch(op){
+				case 1:
+					create(id, name, email);
+					pw.println("Data added successfully");
+					break;
+				case 2:
+					read();
+					break;
+				case 3:
+					update(id, name, email);
+					pw.println("Data updated Successfully");
+					break;
+				case 4:
+					delete(id);
+					pw.println("Data deleted Successfully");
+					break;
+			}
+			
+		}
+		catch (Exception e) {
+            pw.println(e);
+        }
+	}
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		
+	}
+
+}
